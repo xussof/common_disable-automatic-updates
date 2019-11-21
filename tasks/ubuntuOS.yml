@@ -1,9 +1,14 @@
+- stat:
+    path: /etc/apt/apt.conf.d/20auto-upgrades
+  register: stat_20auto
+
 - name: Disable auto update package lists
   become: true
   lineinfile:
     path: /etc/apt/apt.conf.d/20auto-upgrades
     regexp: '^APT::Periodic::Update-Package-Lists "1";'
     line: 'APT::Periodic::Update-Package-Lists "0";'
+  when: stat_20auto.stat.isdir is defined
 
 - name: Disabling unnatended upgrades
   become: true
@@ -11,3 +16,4 @@
     path: /etc/apt/apt.conf.d/20auto-upgrades
     regexp: '^APT::Periodic::Unattended-Upgrade "1";'
     line: 'APT::Periodic::Unattended-Upgrade "0";'
+  when: stat_20auto.stat.isdir is defined
